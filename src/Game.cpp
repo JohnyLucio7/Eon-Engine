@@ -15,8 +15,8 @@ bool Game::IsRunning() const{
 
 float projectilePosX = 0.0f;
 float projectilePosY = 0.0f;
-float projectileVelX = 0.5f;
-float projectileVelY = 0.5f;
+float projectileVelX = 20.0f;
+float projectileVelY = 20.0f;
 
 void Game::Initialize(int width, int height){
 	
@@ -70,9 +70,21 @@ void Game::ProcessInput(){
 
 
 void Game::Update(){
+	
+	// Wait until 16ms has ellapsed since the last frame
+	while(!SDL_TICKS_PASSED(SDL_GetTicks(), ticksLastFrame + FRAME_TARGET_TIME));
 
-	projectilePosX += projectileVelX;
-	projectilePosY += projectileVelY;
+	// Delta time is the difference in ticks from last frame converted to seconds
+	float deltaTime = (SDL_GetTicks() - ticksLastFrame) / 1000.0f;
+
+	// Clamp deltaTime to a maximum value
+	deltaTime = (deltaTime > 0.05f) ? 0.05f : deltaTime;
+	
+	// Set the new ticks for the current frame to be used in the next pass
+	ticksLastFrame = SDL_GetTicks();
+
+	projectilePosX += projectileVelX * deltaTime;
+	projectilePosY += projectileVelY * deltaTime;
 }
 
 void Game::Render(){
